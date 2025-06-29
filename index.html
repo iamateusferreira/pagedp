@@ -74,7 +74,8 @@
       try {
         const numeros = await obterNumeros();
         const numeroAleatorio = numeros[Math.floor(Math.random() * numeros.length)];
-        const url = `https://api.whatsapp.com/send?phone=${numeroAleatorio}&text=Oi,%20quero%20conversar%20com%20voce!`;
+        const url = `https://api.whatsapp.com/send?phone=${numeroAleatorio}&text=Oi%20Roberta,%20tudo%20tranquilo%20bb?
+`;
         console.log('Redirecionando para:', url);
         window.location.href = url;
       } catch (error) {
