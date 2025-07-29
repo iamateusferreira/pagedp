@@ -6,11 +6,31 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Redirecionando...</title>
   <style>
-    body {
-      background-color: #FFFFFF;
-      font-family: Arial, sans-serif;
+    /* Reset e box-sizing */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #FFFFFF;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100vh;
+      padding: 20px;
     }
     .loading {
       animation: rotate 1s linear infinite;
@@ -19,54 +39,62 @@
       border-radius: 50%;
       height: 50px;
       width: 50px;
-      margin: 20px auto;
     }
     @keyframes rotate {
-      0% {
-        transform: rotate(0);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     h1 {
       text-align: center;
-      margin-top: 50px;
-      font-size: 24px;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+    /* Ajustes para telas menores */
+    @media (max-width: 480px) {
+      .loading {
+        width: 40px;
+        height: 40px;
+        border-width: 4px;
+      }
+      h1 {
+        font-size: 1rem;
+      }
     }
   </style>
-  <script>
-    // Função para redirecionar para um grupo de WhatsApp aleatório
-    function redirecionar() {
-      var grupos = [
-        'https://wa.me/556182032553?text=Oi%20Roberta,%20tudo%20tranquilo%20bb?', // Grupo 1
-        'https://wa.me/556181014213?text=Oi%20Roberta,%20tudo%20tranquilo%20bb?', // Grupo 2
-        'https://wa.me/556182076058?text=Oi%20Roberta,%20tudo%20tranquilo%20bb?' // Grupo 3
-      ];
-      var grupoAleatorio = grupos[Math.floor(Math.random() * grupos.length)];
-      window.location.href = grupoAleatorio;
-    }
-    // Função para enviar o evento de PageView para o Facebook
-    function enviarPixel() {
-      fbq('track', 'PageView');
-    }
-  </script>
   <!-- Pixel do Facebook -->
   <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
+    !function(f,b,e,v,n,t,s){
+      if(f.fbq) return; n=f.fbq=function(){
+        n.callMethod? n.callMethod.apply(n,arguments) : n.queue.push(arguments)
+      };
+      if(!f._fbq) f._fbq=n;
+      n.push=n; n.loaded=!0; n.version='2.0'; n.queue=[];
+      t=b.createElement(e); t.async=!0;
+      t.src=v;
+      s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s);
+    }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '3783161771899445');
     fbq('track', 'PageView');
   </script>
+  <script>
+    // Redirecionamento após 5s
+    function redirecionar() {
+      const grupos = [
+        'https://wa.me/556182032553?text=Oi%20Roberta,%20tudo%20tranquilo%20bb?',
+        'https://wa.me/556181014213?text=Oi%20Roberta,%20tudo%20tranquilo%20bb?',
+        'https://wa.me/556182076058?text=Oi%20Roberta,%20tudo%20tranquilo%20bb?'
+      ];
+      const destino = grupos[Math.floor(Math.random() * grupos.length)];
+      window.location.href = destino;
+    }
+  </script>
 </head>
-<body onload="setTimeout(redirecionar, 5000); enviarPixel();">
-  <div class="loading"></div>
-  <h1>Aguarde alguns segundos por favor...</h1>
+<body onload="setTimeout(redirecionar, 5000);">
+  <div class="container">
+    <div class="loading"></div>
+    <h1>Aguarde alguns segundos, por favor...</h1>
+  </div>
 </body>
 </html>
