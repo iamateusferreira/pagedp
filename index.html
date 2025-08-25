@@ -62,7 +62,7 @@
       }
     }
   </style>
-  <!-- Pixel do Facebook -->
+  <!-- Pixel(s) do Facebook (adicionado segundo pixel) -->
   <script>
     !function(f,b,e,v,n,t,s){
       if(f.fbq) return; n=f.fbq=function(){
@@ -75,9 +75,23 @@
       s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s);
     }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '3783161771899445');
+
+    // Inicializa ambos os pixels
+    fbq('init', '3783161771899445');        // pixel 1
+    fbq('init', '619166234589869');        // pixel 2
+
+    // Registra PageView para todos os pixels inicializados
     fbq('track', 'PageView');
   </script>
+
+  <!-- Fallback para usuários com JS desativado (noscript) - um img por pixel -->
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=3783161771899445&ev=PageView&noscript=1"/>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=619166234589869&ev=PageView&noscript=1"/>
+  </noscript>
+
   <script>
     // Redirecionamento após 5s
     function redirecionar() {
@@ -95,15 +109,7 @@
 <body onload="setTimeout(redirecionar, 5000);">
   <div class="container">
     <div class="loading"></div>
-    <h1>Aguarde alguns segundos, por favor...</h1>
+    <h1>Aguarde 5 segundos por favor, vou levar você pro meu WhatsApp...</h1>
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
