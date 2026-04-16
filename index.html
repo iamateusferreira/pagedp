@@ -1,9 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
   <title>Redirecionando...</title>
+  <style>
+    body {
+      background-color: #000000; /* Fundo preto */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden; /* Evita barras de rolagem */
+    }
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 18px;
+      color: #FFFFFF; /* Texto branco */
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .loading {
+      animation: rotate 1s linear infinite;
+      border: 5px solid #4F4F4F; /* Cinza escuro */
+      border-top: 5px solid #00FF00; /* Parte superior em verde */
+      border-radius: 50%;
+      height: 50px;
+      width: 50px;
+      margin-top: 10px;
+    }
+    @keyframes rotate {
+      0% { transform: rotate(0); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 
   <!-- Facebook Pixel Code - PageView para 2 pixels -->
   <script>
@@ -26,87 +68,59 @@
     <img height="1" width="1" style="display:none"
          src="https://www.facebook.com/tr?id=619166234589869&ev=PageView&noscript=1"/>
   </noscript>
-  <!-- End Facebook Pixel Code -->
-
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #25d366, #128c7e);
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: white;
-      text-align: center;
-    }
-
-    .pulse-icon {
-      width: 80px;
-      height: 80px;
-      background-color: #25d366;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: pulse 1.5s infinite;
-      box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
-      margin-bottom: 20px;
-    }
-
-    .pulse-icon img {
-      width: 40px;
-      height: 40px;
-    }
-
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
-      }
-      70% {
-        box-shadow: 0 0 0 20px rgba(37, 211, 102, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
-      }
-    }
-
-    h1 {
-      font-size: 1.5em;
-    }
-  </style>
-</head>
-<body>
-  <div class="pulse-icon" aria-hidden="true">
-    <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp Icon">
-  </div>
-  <h1>Aguarde alguns segundos...</h1>
-  <p>Você será redirecionado para o WhatsApp.</p>
 
   <script>
-    const DESTINOS = [
-      'https://wa.me/573218751561?text=Oi%20quero%20comprar%20seus%20conteudos',
-      'https://wa.me/573218751561?text=Oi%20quero%20comprar%20seus%20conteudos'
-    ];
+    // A função redirecionar será definida e chamada ao carregar a página
+    // Isso garante que ela esteja pronta para o body.onload
+    async function redirecionar() {
+        // **IMPORTANTE**: CONFIRME ESTA URL. É a URL de PRODUÇÃO do seu Webhook no n8n.
+        const N8N_WEBHOOK_URL = 'https://webhook.canalwpp.com/webhook/pressel'; 
+        const defaultWhatsapp = '5511999999999'; // Um WhatsApp de fallback para emergências
+        const textParam = encodeURIComponent('Oi quero comprar seus conteudos'); 
 
-    function escolherDestinoAleatorio() {
-      if (!Array.isArray(DESTINOS) || DESTINOS.length === 0) {
-        console.warn('Array DESTINOS vazio — nenhum link para redirecionar.');
-        return null;
-      }
-      return DESTINOS[Math.floor(Math.random() * DESTINOS.length)];
+        try {
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'GET', 
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                console.error('Erro na resposta HTTP do n8n:', response.status, response.statusText);
+                const fallbackUrl = `https://wa.me/${defaultWhatsapp}?text=${textParam}`;
+                window.location.href = fallbackUrl;
+                return;
+            }
+
+            const data = await response.json();
+
+            let finalWhatsappNumber;
+            if (data && data.whatsapp && String(data.whatsapp).trim() !== '') { 
+                finalWhatsappNumber = data.whatsapp;
+            } else {
+                console.error('A propriedade "whatsapp" não foi encontrada na resposta do n8n, está vazia ou a resposta está malformada. Usando WhatsApp padrão.');
+                finalWhatsappNumber = defaultWhatsapp;
+            }
+
+            const whatsappRedirectUrl = `https://wa.me/${finalWhatsappNumber}?text=${textParam}`;
+            window.location.href = whatsappRedirectUrl;
+            return;
+        } catch (error) {
+            console.error('Erro ao comunicar com o n8n ou processar resposta:', error);
+            const fallbackUrl = `https://wa.me/${defaultWhatsapp}?text=${textParam}`;
+            window.location.href = fallbackUrl;
+            return;
+        }
     }
-
-    function redirecionar() {
-      const destino = escolherDestinoAleatorio();
-      if (!destino) return; // nada a fazer
-      window.location.href = destino;
-    }
-
-    // mantém o delay de 3s (3000ms)
-    setTimeout(redirecionar, 3000);
+    // Não precisa de IIFE ou atribuição a window.redirecionar se a função estiver definida no escopo global antes do onload
+    // e o onload estiver no <body>. O navegador garante a disponibilidade.
   </script>
+</head>
+<body onload="redirecionar();">
+  <div class="loading-container">
+    <h1>Aguarde alguns segundos...</h1>
+    <div class="loading"></div>
+  </div>
 </body>
 </html>
